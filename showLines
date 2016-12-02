@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+import telnetlib
+import time
+import sys
+import argparse
+
+def telnet_conn(ip):
+    try:
+
+        # telnet parameters
+	username = 'student'
+        password = 'cisco'
+        TELNET_PORT = 23
+        TELNET_TIMEOUT = 5
+        READ_TIMEOUT = 5
+        
+        # login
+        connection = telnetlib.Telnet(ip, TELNET_PORT, TELNET_TIMEOUT)
+        time.sleep(1)
+        
+	# send initial enter	
+	connection.write("\n")
+        
+	connection.read_until("name:", READ_TIMEOUT)
+        connection.write(username + "\n")
+        
+        connection.read_until("word:", READ_TIMEOUT)
+        connection.write(password + "\n")
+        time.sleep(1)	
+        
+        connection.write("terminal length 0\n")
+        time.sleep(1)
+        
+        connection.write('\n')
+        connection.write('show line\n')
+        time.sleep(3)
+        
+        # print show lines
+        output1 = connection.read_very_eager()
+        print output1
+        
+	# close connection
+        connection.close()
+        
+    except IOError:
+        print "Connection Error!"
+
+def main():
+    parser = argparse.ArgumentParser(description='****Show terminal server lines.****')
+    parser.add_argument('-ip', help='IP address of Terminal Server.', required=True)
+    args = vars(parser.parse_args())
+    
+    print '\n'+'*'*24
+    print 'Connecting to {}'.format(args['ip'])
+    print '*'*24
+    telnet_conn(args['ip'])
+
+if __name__ == '__main__':
+    main()
