@@ -1,0 +1,9 @@
+hostname Router-1
+!
+
+interface fa0/1
+ description Internal LAN
+ ip address 1.1.1.1 255.255.255.0
+!
+banner motd >Unauthorized access is prohibited!>
+

@@ -1,0 +1,21 @@
+---
+- hosts: local
+  become: yes
+
+  vars:
+    username: omz
+    password: omz
+    public_key: ~/.ssh/ansible.pub
+  
+  tasks:
+  - name: Install GIT
+    apt: pkg=git state=installed update_cache=true
+
+  #  - name: Install Nginx
+  #    apt: pkg=nginx state=installed update_cache=true
+  #    notify:
+  #     - Start Nginx
+
+  # handlers:
+  #  - name: Start Nginx
+  #    service: name=nginx state=started

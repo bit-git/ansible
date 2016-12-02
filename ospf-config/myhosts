@@ -1,0 +1,4 @@
+[cisco]
+
+R1    ansible_host=10.10.10.5
+#R2    ansible_host=10.10.10.3

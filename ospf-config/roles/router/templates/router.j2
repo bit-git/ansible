@@ -1,0 +1,16 @@
+hostname {{ item.hostname }}
+!
+!
+{% for lb in loopback_int %}
+interface lo{{ lb.num }}
+ip address {{ lb.address }} {{ lb.mask }}
+{% endfor %}
+!
+!
+router ospf {{ item.ospf_PID}}
+!
+{% for n in networks %}
+network {{ n.network }} {{ n.wildmask }} area {{ n.area }} 
+{% endfor %}
+!
+

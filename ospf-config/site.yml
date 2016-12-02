@@ -1,0 +1,8 @@
+---
+- name: Generate router configuration files
+  hosts: cisco
+  gather_facts: no
+  connection: local
+
+  roles:
+    - router

@@ -1,0 +1,37 @@
+---
+- name: Reboot devices running Junos OS
+  hosts: 10.10.10.2 
+  roles:
+  - Juniper.junos    
+  connection: local
+  gather_facts: no
+
+  vars:
+    restart: 'yes'
+    reboot_wait: 300
+  vars_prompt:
+  - name: shutdown
+    prompt: "Enter 'shutdown' to continue"
+    private: no
+
+  tasks:
+  - name: Checking NETCONF connectivity
+    wait_for: host={{ inventory_hostname }} port=830 timeout=5
+
+  - name: Rebooting devices running Junos OS ... restart={{ restart }} 
+    junos_shutdown:
+      host={{ inventory_hostname }}
+      shutdown={{ shutdown }}
+      reboot={{ restart }}
+    register: sd_result
+    notify:
+    - pause_for_reboot
+    - wait_reboot
+
+  handlers:
+  - name: pause_for_reboot
+    pause: seconds=60
+    when: sd_result.reboot == true
+  - name: wait_reboot
+    wait_for: host={{ inventory_hostname }} port=830 timeout={{ reboot_wait }}
+    when: sd_result.reboot == true

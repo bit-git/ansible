@@ -1,0 +1,26 @@
+--- 
+  - name: Getting credentials...
+    include_vars: password.yml
+
+  - name: Creating connection to the device...
+    set_fact:
+      provider:
+        host: "{{ inventory_hostname }}"
+        username: "{{ creds['username'] }}"
+        password: "{{ creds['password'] }}"
+        auth_pass: "{{ creds['auth_pass'] }}"
+
+  - name: Generate configuration files
+    template: src=router.j2 dest=/home/omz/ansible-play/ospf-config/CFGS/{{ item.hostname }}.txt  
+    with_items: "{{ basic_tmpl }}"
+
+  - name: Loading configs for {{ inventory_hostname }}
+    ios_config:
+      provider: "{{ provider }}"
+      authorize: yes
+#      commands: "{{ lookup('file','config.txt') }}"
+      src: /home/omz/ansible-play/ospf-config/CFGS/{{ inventory_hostname }}.txt
+#      backup: yes
+#      save: yes
+    register: loaded_configs
+  - debug: var=loaded_configs

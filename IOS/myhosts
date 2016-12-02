@@ -1,0 +1,2 @@
+[Cisco_IOS]
+R1    ansible_host=10.10.10.5

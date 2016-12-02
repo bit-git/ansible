@@ -1,0 +1,85 @@
+---
+- hosts: Cisco_IOS
+  gather_facts: no
+  connection: local
+
+  tasks:
+  - name: Getting credentials...
+    include_vars: password.yml
+
+  - name: Creating connection...
+    set_fact:
+      provider:
+        host: "{{ inventory_hostname }}"
+        username: "{{ creds['username'] }}"
+        password: "{{ creds['password'] }}"
+        auth_pass: "{{ creds['auth_pass'] }}"
+
+  - name: Running 'show version' command...
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show version
+    register: version
+  - debug: var=version.stdout_lines
+
+  - name: Checking the hostname.
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show run | i hostname 
+    register: pre_hostname
+  - debug: var=pre_hostname.stdout_lines
+
+  - name: Setting the hostname.
+    ios_config:
+      provider: "{{ provider }}"
+      authorize: yes
+      lines:
+        - hostname Router-1 
+    
+  - name: Updated the hostname.
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show run | i hostname 
+    register: post_hostname
+  - debug: var=post_hostname.stdout_lines
+
+  - name: Running 'show access-list TEST'
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show access-list TEST 
+    register: before_acl
+  - debug: var=before_acl.stdout_lines
+
+  - name: Creating ACL 'TEST'
+    ios_config:
+      provider: "{{ provider }}"
+      authorize: yes
+      lines:
+        - 10 permit ip host 1.1.1.1 any
+        - 20 deny ip any any
+      parents: ['ip access-list extended TEST']
+      before: ['no ip access-list extended TEST']
+      match: exact
+
+  - name: Running 'show access-list TEST'
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show access-list TEST 
+    register: after_acl
+  - debug: var=after_acl.stdout_lines
+
+  - name: Run 'show running-config'
+    ios_command:
+      provider: "{{ provider }}"
+      commands:
+        - show running-config
+    register: sh_run
+  - debug: var=sh_run.stdout_lines
+
+
+
