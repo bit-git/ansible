@@ -55,7 +55,7 @@ def telnet_conn(ip):
 
 def main():
     parser = argparse.ArgumentParser(description='****Show terminal server lines.****')
-    parser.add_argument('-ip', help='IP address of Terminal Server.', required=True)
+    parser.add_argument('-ip', '--ip', help='IP address of Terminal Server.', required=True)
     args = vars(parser.parse_args())
     
     print '\n'+'*'*24

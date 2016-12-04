@@ -5,44 +5,46 @@ import time
 import sys
 import argparse
 
-def telnet_conn(ip, first_line, last_line):
+def telnet_conn(ip, firstLine, lastLine):
     try:
 
-        # telnet parameters
-	username = 'student'
+        # defaults
+        username = 'student'
         password = 'cisco'
         TELNET_PORT = 23
         TELNET_TIMEOUT = 5
         READ_TIMEOUT = 5
         
-        # login
+        # create telnet connection object
         connection = telnetlib.Telnet(ip, TELNET_PORT, TELNET_TIMEOUT)
         time.sleep(1)
         
-	# send initial enter	
-	connection.write("\n")
-        
-	connection.read_until("name:", READ_TIMEOUT)
+        # send initial keystoke to get prompt
+        connection.write("\n")
+
+        # read from prompt until username
+        connection.read_until("name:", READ_TIMEOUT)
         connection.write(username + "\n")
         
+        # read from prompt until password
         connection.read_until("word:", READ_TIMEOUT)
         connection.write(password + "\n")
-        time.sleep(1)	
+        time.sleep(1)   
         
         connection.write("terminal length 0\n")
         time.sleep(1)        
         connection.write("\n")
    
-	# clear lines
-	for line in range(first_line, last_line + 1):
+        # clear lines
+        for line in range(firstLine, lastLine + 1):
             connection.write("clear line {} \n".format(line))
             connection.write("\n")
-	
-	# show lines after clearing
- 	connection.write("show line\n")
+
+        # show lines after clearing
+        connection.write("show line\n")
         time.sleep(2)
         
-	output = connection.read_very_eager()
+        output = connection.read_very_eager()
         print output
 
         # close connection
@@ -51,18 +53,18 @@ def telnet_conn(ip, first_line, last_line):
     except IOError:
         print "Connection Error!"
 
-		
+
 def main():
     parser = argparse.ArgumentParser(description='****Clear terminal server lines.****')
-    parser.add_argument('-ip', help='IP address of Terminal Server.', required=True)
-    parser.add_argument('-f','--first', help='First line to clear on Terminal Server.', required=True,type=int)
-    parser.add_argument('-l','--last',help='Last line to clear on Terminal Server.', required=True,type=int)
+    parser.add_argument('-ip', '--ip', help='IP address of Terminal Server.', required=True)
+    parser.add_argument('-f', '--firstLine', help='First line to clear on Terminal Server.', required=True,type=int)
+    parser.add_argument('-l', '--lastLine', help='Last line to clear on Terminal Server.', required=True,type=int)
     args = vars(parser.parse_args())
     
     print '\n' + '*' * 52
-    print 'Connecting to {0} and clearing lines {1} - {2}.'.format(args['ip'],args['first'],args['last'])
+    print 'Connecting to {0} and clearing lines {1} - {2}.'.format(args['ip'],args['firstLine'],args['lastLine'])
     print '*' * 52
-    telnet_conn(args['ip'],args['first'],args['last'])
+    telnet_conn(args['ip'],args['firstLine'],args['lastLine'])
 
 if __name__ == '__main__':
     main()
