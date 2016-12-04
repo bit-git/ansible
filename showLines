@@ -6,23 +6,29 @@ import sys
 import argparse
 import logging
 
-#logging.basicConfig(filename='showLines.log',level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format = '[%(levelname)s]: %(message)s')
 
 def telnet_conn(ip):
     try:
 
         # telnet parameters
-        username = 'student'
-        password = 'cisco'
+
+        # username = 'student'
+        # password = 'cisco'
+        
+        username = 'omz'
+        password = 'omz'
+
         TELNET_PORT = 23
         TELNET_TIMEOUT = 5
         READ_TIMEOUT = 5
         
         # login
         connection = telnetlib.Telnet(ip, TELNET_PORT, TELNET_TIMEOUT)
-        #time.sleep(1)
-        
-        print logging.debug('Connection established...')
+        time.sleep(1)
+        logging.info('Connection established to {}'.format(ip))
         time.sleep(1)
 
         # send initial enter	
@@ -35,15 +41,21 @@ def telnet_conn(ip):
         # read from prompt until password
         connection.read_until("word:", READ_TIMEOUT)
         connection.write(password + "\n")
-        time.sleep(1)	
-        
-        connection.write("terminal length 0\n")
-        time.sleep(1)
-        
+        logging.info('Authentication successful.')
+
+        connection.write("terminal length 0 \n")
         connection.write('\n')
-        connection.write('show line\n')
-        time.sleep(3)
-        
+
+        showLines = raw_input("\nShow all lines or only the lines in-use.\
+                               \na = all lines, i = lines in-use: ").lower()
+                
+        if showLines == 'a':
+            connection.write('show line \n')
+            time.sleep(1)
+        elif showLines == 'i':
+            connection.write('show line | i \*|Tty \n')
+            time.sleep(1)
+
         # print output of show lines
         lines = connection.read_very_eager()
         print lines
@@ -58,12 +70,10 @@ def main():
     parser.add_argument('-ip', '--ip', help='IP address of Terminal Server.', required=True)
     args = vars(parser.parse_args())
     
-    print '\n'+'*'*24
-    print 'Connecting to {}'.format(args['ip'])
-    print '*'*24
-    
-    #logging.info('Logging to log')
+    print '\n'
+    logging.info('Trying Telnet to {}'.format(args['ip']))
     telnet_conn(args['ip'])
 
 if __name__ == '__main__':
     main()
+
