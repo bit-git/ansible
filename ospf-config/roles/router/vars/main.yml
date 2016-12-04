@@ -1,11 +1,10 @@
 ---
 basic_tmpl:
-   - { hostname: R1, ospf_PID: 99 }
-   - { hostname: R2, ospf_PID: 99 }
+   - { hostname: R1, ospf_PID: 100, ospf_RID: 1.1.1.1 }
 
 loopback_int:
-   - { num: 0, address: 11.11.11.11, mask: 255.255.255.255  }
+   - { num: 0, address: 1.1.1.1, mask: 255.255.255.255 }
 
 networks:
-   - { network: 0.0.0.0, wildmask: 255.255.255.255, area: 0 }
-   
+   - { network: 1.1.1.1, wildmask: 0.0.0.0, area: 0 }
+   - { network: 192.168.1.0, wildmask: 0.0.0.255, area: 0 }

@@ -8,7 +8,7 @@ import os
 
 BASIC_TMPL = """---
 basic_tmpl:
-   - { hostname: %s, ospf_PID: %s }
+   - { hostname: %s, ospf_PID: %s, ospf_RID: %s }
 
 loopback_int:
 """
@@ -17,14 +17,15 @@ LOOPBACK_TMPL = "   - { num: %s, address: %s, mask: %s }\n"
 NET_TMPL = "   - { network: %s, wildmask: %s, area: %s }\n"""
 
 
-def loopbackInt():
+def ospfConfig():
     """ This function asks the user to insert information about loopback interfaces. """
     
     print "\n*** OSPF Configuration ***"
     dict_ospf = {}
     
     ospfPID = raw_input("Insert OSPF process id: ")
-    
+    ospfRID = raw_input("Insert OSPF router-id: ")
+
     while True:
         ospf_loopback = {}
 
@@ -38,13 +39,13 @@ def loopbackInt():
             break
         else:
             print "Input error!"
-    return (dict_ospf, ospfPID)
+    return (dict_ospf, ospfPID, ospfRID)
 
 
-def Networks():
-    """ This function asks the user to insert information about BGP neighbors. """
+def networks():
+    """ Get OSPF networks to advertise. """
     
-    print "\n*** OSPF NETWORKS ***\nNetworks to advertise into OSPF."
+    print "\n*** OSPF NETWORKS ***\nnetworks to advertise into OSPF."
     dict_networks = {}
     count = 0
     while True:
@@ -82,13 +83,13 @@ def main(args):
     
     print "\n*** Disclaimer! Be careful with the format of inputs.\nThere is NO input validation. :) ***\n"   
     hostname = raw_input("Enter hostname : ")
-    ospf, ospfPID = loopbackInt()
+    ospf, ospfPID, ospfRID = ospfConfig()
     
-    # Networks to adv into ospf
-    networks = Networks()
+    # networks to adv into ospf
+    nets = networks()
     
     # Build .tmpl vat file to sue with j2 to generate configs
-    basic_vars = BASIC_TMPL % (hostname, ospfPID)
+    basic_vars = BASIC_TMPL % (hostname, ospfPID, ospfRID)
     vars_file.write(basic_vars)
 
     for interface in ospf:
@@ -97,8 +98,8 @@ def main(args):
 
     vars_file.write("\nnetworks:\n")
 
-    for net in networks:
-        netYml = NET_TMPL %  (networks[net]["network"], networks[net]["wildmask"], networks[net]["area"])
+    for net in nets:
+        netYml = NET_TMPL %  (nets[net]["network"], nets[net]["wildmask"], nets[net]["area"])
         vars_file.write(netYml)
 
     # file close

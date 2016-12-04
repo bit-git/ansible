@@ -4,12 +4,15 @@ import telnetlib
 import time
 import sys
 import argparse
+import logging
+
+#logging.basicConfig(filename='showLines.log',level=logging.DEBUG)
 
 def telnet_conn(ip):
     try:
 
         # telnet parameters
-	username = 'student'
+        username = 'student'
         password = 'cisco'
         TELNET_PORT = 23
         TELNET_TIMEOUT = 5
@@ -17,14 +20,19 @@ def telnet_conn(ip):
         
         # login
         connection = telnetlib.Telnet(ip, TELNET_PORT, TELNET_TIMEOUT)
+        #time.sleep(1)
+        
+        print logging.debug('Connection established...')
         time.sleep(1)
+
+        # send initial enter	
+        connection.write("\n")
         
-	# send initial enter	
-	connection.write("\n")
-        
-	connection.read_until("name:", READ_TIMEOUT)
+        # read from prompt until username
+        connection.read_until("name:", READ_TIMEOUT)
         connection.write(username + "\n")
         
+        # read from prompt until password
         connection.read_until("word:", READ_TIMEOUT)
         connection.write(password + "\n")
         time.sleep(1)	
@@ -36,15 +44,14 @@ def telnet_conn(ip):
         connection.write('show line\n')
         time.sleep(3)
         
-        # print show lines
-        output1 = connection.read_very_eager()
-        print output1
+        # print output of show lines
+        lines = connection.read_very_eager()
+        print lines
         
-	# close connection
         connection.close()
         
     except IOError:
-        print "Connection Error!"
+        print "\nConnection Error!\n"
 
 def main():
     parser = argparse.ArgumentParser(description='****Show terminal server lines.****')
@@ -54,6 +61,8 @@ def main():
     print '\n'+'*'*24
     print 'Connecting to {}'.format(args['ip'])
     print '*'*24
+    
+    #logging.info('Logging to log')
     telnet_conn(args['ip'])
 
 if __name__ == '__main__':

@@ -9,6 +9,8 @@ ip address {{ lb.address }} {{ lb.mask }}
 !
 router ospf {{ item.ospf_PID}}
 !
+router-id {{ item.ospf_RID }}
+!
 {% for n in networks %}
 network {{ n.network }} {{ n.wildmask }} area {{ n.area }} 
 {% endfor %}
