@@ -1,4 +1,5 @@
 ospf.py
+ospfconfig.py
 ospf-test*
 
 # Compiled source #
