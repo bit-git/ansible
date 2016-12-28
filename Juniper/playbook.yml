@@ -1,19 +1,48 @@
 ---
+
 - name: Get Device Facts
-  hosts: 10.10.10.2
+  hosts: Junos
   roles:
   - Juniper.junos 
   connection: local
   gather_facts: no
 
+  vars:
+    netconf:
+      host: "{{ inventory_hostname }}"
+
   tasks:
   - name: Checking NETCONF connectivity
     wait_for: host={{ inventory_hostname }} port=830 timeout=5
 
-  - name: Retrieve information from devices running Junos OS
+  - name: Retrieving facts...
     junos_get_facts:  
       host={{ inventory_hostname }}
     register: junos
 
-  - name: version
-    debug: msg="{{ junos.facts.version }}"
+  - name: Facts
+    debug: msg="{{ junos.facts }}"
+
+  - name: Retrieve configuration...
+    junos_get_config:  
+      host: "{{ inventory_hostname }}"
+      dest: "{{ inventory_hostname }}.xml"
+      format: xml
+      #provider: "{{ netconf }}"
+
+  - name: load configure file into device
+    junos_config:
+      #host={{ inventory_hostname }}
+      src: "{{ inventory_hostname }}.cfg"
+      comment: update config
+      provider: "{{ netconf }}"
+
+  - name: Retrieving hostname...
+    junos_get_facts:  
+      host={{ inventory_hostname }}
+    register: hostname
+
+  - name: Hostname
+    debug: msg="{{ hostname.facts.hostname }}"
+
+

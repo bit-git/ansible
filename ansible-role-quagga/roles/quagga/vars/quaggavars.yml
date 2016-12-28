@@ -1,3 +1,4 @@
+---
 conffiles:
     - { name: 'babeld.conf', owner: 'quagga', group: 'quagga', mode: '640' }
     - { name: 'bgpd.conf', owner: 'quagga', group: 'quagga', mode: '640' }

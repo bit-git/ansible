@@ -1,13 +1,11 @@
 hostname R1
 !
 !
-interface lo0
-ip address 1.1.1.1 255.255.255.255
 !
 !
 router ospf 100
+ router-id 1.1.1.1
+ network 0.0.0.0 255.255.255.255 area 0
 !
-network 1.1.1.1 0.0.0.0 area 0 
-network 192.168.1.0 0.0.0.255 area 0 
 !
-
+end

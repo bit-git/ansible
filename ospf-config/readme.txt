@@ -1,25 +1,25 @@
 As a quick reminder, we have three parts to our templating system - 
 
-/home/omz/ansible/Cisco/roles/router
+/home/user/ansible/Cisco/roles/router
 
-omz@DevOps:~/ansible/Cisco/roles/router$ ls
+user@DevOps:~/ansible/Cisco/roles/router$ ls
 tasks  templates  vars
 
 1)the tasks file (tasks/main.yml)
 2)the vars file (vars/main.yml)
 3)the template file (templates/router.j2)
 
-These are all organized under an Ansible role (in my example, /home/omz/ansible/Cisco/roles/router)
+These are all organized under an Ansible role (in my example, /home/user/ansible/Cisco/roles/router)
 
 configs are saved in CFG folder - tasks/main.yml
 
-omz@DevOps:~/ansible/Cisco$ ls
+user@DevOps:~/ansible/Cisco$ ls
 CFGS  hosts  readme.txt  roles  site.yml
 
 
 --- Cisco/site.yml ---
-/home/omz/ansible/Cisco
-omz@DevOps:~/ansible/Cisco$ cat site.yml 
+/home/user/ansible/Cisco
+user@DevOps:~/ansible/Cisco$ cat site.yml 
 ---
 - name: Generate router configuration files
   hosts: localhost
@@ -29,19 +29,19 @@ omz@DevOps:~/ansible/Cisco$ cat site.yml
 
 
 --- tasks/main.yml ---
-/home/omz/ansible/Cisco/roles/router/tasks
-omz@DevOps:~/ansible/Cisco/roles/router/tasks$ cat main.yml 
+/home/user/ansible/Cisco/roles/router/tasks
+user@DevOps:~/ansible/Cisco/roles/router/tasks$ cat main.yml 
 ---
 - name: Generate configuration files
-  template: src=router.j2 dest=/home/omz/ansible/Cisco/CFGS/{{item.hostname}}.txt
+  template: src=router.j2 dest=/home/user/ansible/Cisco/CFGS/{{item.hostname}}.txt
   with_items: test_routers
 
 
 --- vars/main.yml ---
-omz@DevOps:~/ansible/Cisco/roles/router/vars$ cat main.yml 
+user@DevOps:~/ansible/Cisco/roles/router/vars$ cat main.yml 
 ---
 test_routers:
-    - { hostname: twb-sf-rtr1,
+    - { hostname: sf-rtr1,
         secret: apassword,
         timezone: PST,
         timezone_dst: PDT,
@@ -58,13 +58,13 @@ test_routers:
         public_gateway: 6.6.6.1,
         vlan10_ip: 10.1.1.1,
         vlan10_network: 10.1.1.0 }
-#   - { hostname: twb-sf-rtr2 }
+#   - { hostname: sf-rtr2 }
 
-#   - { hostname: twb-la-rtr1 }
+#   - { hostname: la-rtr1 }
 
-#   - { hostname: twb-la-rtr2 }
+#   - { hostname: la-rtr2 }
 
-#   - { hostname: twb-den-rtr1 }
+#   - { hostname: den-rtr1 }
 
 cisco_881_l2_interfaces:
   - FastEthernet0
@@ -250,7 +250,7 @@ end
 
 ---------------------------------------------------------------------------------------
 
-omz@DevOps:~/ansible/Cisco$ ansible-playbook site.yml 
+user@DevOps:~/ansible/Cisco$ ansible-playbook site.yml 
  [WARNING]: provided hosts list is empty, only localhost is available
 
 PLAY [Generate router configuration files] *************************************
@@ -259,9 +259,9 @@ TASK [setup] *******************************************************************
 ok: [localhost]
 
 TASK [router : Generate configuration files] ***********************************
-ok: [localhost] => (item={u'timezone_dst': u'PDT', u'dhcp_network': u'10.1.1.0', u'CBAC': True, u'vlan10_ip': u'10.1.1.1', u'timezone_offset': -8, u'hostname': u'twb-sf-rtr1', u'vlan10_network': u'10.1.1.0', u'dhcp_gateway': u'10.1.1.1', u'public_ip': u'6.6.6.6', u'dhcp_netmask': u'255.255.255.0', u'public_gateway': u'6.6.6.1', u'dhcp_exclude1_end': u'10.1.1.99', u'public_netmask': u'255.255.255.0', u'DHCP': True, u'timezone': u'PST', u'dhcp_exclude1_start': u'10.1.1.1', u'secret': u'apassword'})
+ok: [localhost] => (item={u'timezone_dst': u'PDT', u'dhcp_network': u'10.1.1.0', u'CBAC': True, u'vlan10_ip': u'10.1.1.1', u'timezone_offset': -8, u'hostname': u'sf-rtr1', u'vlan10_network': u'10.1.1.0', u'dhcp_gateway': u'10.1.1.1', u'public_ip': u'6.6.6.6', u'dhcp_netmask': u'255.255.255.0', u'public_gateway': u'6.6.6.1', u'dhcp_exclude1_end': u'10.1.1.99', u'public_netmask': u'255.255.255.0', u'DHCP': True, u'timezone': u'PST', u'dhcp_exclude1_start': u'10.1.1.1', u'secret': u'apassword'})
 
 PLAY RECAP *********************************************************************
 localhost                  : ok=2    changed=0    unreachable=0    failed=0   
 
-omz@DevOps:~/ansible/Cisco$
+user@DevOps:~/ansible/Cisco$

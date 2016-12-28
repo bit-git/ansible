@@ -1,0 +1,18 @@
+hostname {{ yml['basic_tmpl']['hostname'] }}
+!
+!
+{% for item in yml['interfaces'] %}
+interface {{ item['name']  }}
+ ip address {{ item['address'] }} {{ item['mask'] }}
+ no shut
+{% endfor%}
+!
+!
+router ospf {{ yml['basic_tmpl']['ospf_PID'] }}
+ router-id {{ yml['basic_tmpl']['ospf_RID'] }}
+{% for item in yml['networks'] %}
+ network {{ item['network'] }} {{ item['wildmask'] }} area {{ item['area'] }}
+{% endfor %}
+!
+!
+end

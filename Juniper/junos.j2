@@ -1,0 +1,20 @@
+configure exclusive
+
+set system host-name {{ inventory_hostname }}
+
+set protocols ospf area {{ item.area }} interface all
+
+set routing-options autonomous-system {{ item.as }}
+
+set interface unit 0.0 family inet address {{ item.ip }}
+
+{% for neighbor in juniper_neighbors %}
+set protocols bgp group external-peers neighbor {{ neighbor.id }} peer-as {{ neighbor.as }}
+{% endfor %}
+
+{% for loopback in juniper_loopback %}
+set interface lo0 unit 0 family inet address {{ loopback.address }}
+
+{% endfor %}
+
+commit

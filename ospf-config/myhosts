@@ -1,4 +1,8 @@
-[cisco]
+[Cisco]
 
-R1    ansible_host=10.10.10.5
-#R2    ansible_host=10.10.10.3
+R1
+R2
+
+[Quagga]
+
+R3

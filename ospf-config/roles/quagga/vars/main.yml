@@ -1,0 +1,9 @@
+---
+ospf_config:
+
+    - {
+        hostname: r1,
+        pid: 1,
+        network: 1..1, wildmask: .1.1, area: 0,
+        rid: 1.1.1
+     }       

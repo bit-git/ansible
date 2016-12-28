@@ -1,8 +1,16 @@
 ---
-- name: Generate router configuration files
-  hosts: cisco
+- name: Generate Cisco configuration files
+  hosts: Cisco
   gather_facts: no
   connection: local
 
   roles:
-    - router
+    - cisco
+    
+# - name: Generate Quagga configuration files
+#   hosts: Quagga
+#   gather_facts: no
+#   connection: local
+
+#   roles:
+#     - quagga    

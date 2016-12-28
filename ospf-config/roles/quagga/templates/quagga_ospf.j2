@@ -1,0 +1,9 @@
+configure exclusive
+
+set system host-name {{ item.hostname }}
+
+{% for i in interface %}
+set protocols ospf area {{ item.area }} interface {{ item.interface }}
+{% endfor %}
+
+commit

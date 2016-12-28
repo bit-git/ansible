@@ -1,0 +1,11 @@
+---
+basic_tmpl:
+   hostname: R2
+   ospf_PID: 100
+   ospf_RID: 2.2.2.2
+
+loopback_int:
+   - { num: 0, address: 2.2.2.2, mask: 255.255.255.255 }
+
+networks:
+   - { network: 0.0.0.0, wildmask: 255.255.255.255, area: 0 }

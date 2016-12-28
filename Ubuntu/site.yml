@@ -1,21 +1,51 @@
 ---
-- hosts: local
+- hosts: Ubuntu
   become: yes
+  gather_facts: no
 
-  vars:
-    username: omz
-    password: omz
-    public_key: ~/.ssh/ansible.pub
-  
   tasks:
-  - name: Install GIT
-    apt: pkg=git state=installed update_cache=true
 
-  #  - name: Install Nginx
-  #    apt: pkg=nginx state=installed update_cache=true
-  #    notify:
-  #     - Start Nginx
+  # - name: Gather Facts...
+  #   setup: 
+  #     gather_subset=all
+  #   register: facts
+  # #- debug: msg={{facts.ansible_facts.ansible_all_ipv4_addresses}}
+  # - debug: var=facts.ansible_facts.ansible_all_ipv4_addresses
 
-  # handlers:
-  #  - name: Start Nginx
-  #    service: name=nginx state=started
+
+  # - name: Install GIT
+  #   apt: pkg=git state=installed update_cache=true
+  #   apt: pkg=git state=latest update_cache=true
+  #   apt: pkg=git state=absent update_cache=true
+
+
+  # - name: Install Nginx
+  #   apt: 
+  #     name: nginx
+  #     #state: latest
+  #     state: present      
+  #     # update_cache: true = apt-get update
+  #     update_cache: yes
+  #     # upgrade: dist
+  #   notify:
+  #    - Start Nginx
+
+
+  - name: Unistall Nginx
+    apt: 
+      name: nginx
+      state: absent
+      purge: yes
+      autoremove: yes
+      update_cache: yes
+    notify:
+     - Stop Nginx
+
+  handlers:
+    - name: Start Nginx
+      service: name=nginx state=started
+    - name: Stop Nginx
+      service: name=nginx state=stopped
+  
+    
+  

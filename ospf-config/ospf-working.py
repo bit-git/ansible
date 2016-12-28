@@ -4,11 +4,14 @@ import argparse
 import sys
 import time
 import os
-
+from jinja2 import Environment, FileSystemLoader, Template
+import yaml
 
 BASIC_TMPL = """---
 basic_tmpl:
-   - { hostname: %s, ospf_PID: %s, ospf_RID: %s }
+   hostname: %s
+   ospf_PID: %s
+   ospf_RID: %s
 
 loopback_int:
 """
@@ -92,15 +95,18 @@ def main():
     
     
     print "\n*** Disclaimer! Be careful with the format of inputs.\nThere is NO input validation. :) ***\n"   
-    
-    if raw_input('Add another: ') != 'q':
-        vars_file = open("/home/omz/ansible-play/ospf-config/roles/router/vars/main.yml", 'w')
+    numHosts = input('Enter the total number of devices to configure: ' )
+    while numHosts != 0:
+        vars_file = open("/home/omz/ansible-play/ospf-config/roles/cisco/vars/main.yml", 'w')
+        
         hostname = hostName()
         ospf, ospfPID, ospfRID = ospfConfig()
         nets = networks()
-        
+        numHosts -= 1
+
         # Build .tmpl vat file to sue with j2 to generate configs
         basic_vars = BASIC_TMPL % (hostname, ospfPID, ospfRID)
+        
         vars_file.write(basic_vars)
             
         for interface in ospf:
@@ -113,41 +119,47 @@ def main():
         for net in nets:
             netYml = NET_TMPL %  (nets[net]["network"], nets[net]["wildmask"], nets[net]["area"])
             vars_file.write(netYml)
-
         # file close
         vars_file.close()
 
-        print "../vars/main.yml generating..."
-        time.sleep(2)
-        print "../vars/main.yml generated!"
 
-        # Generating the configs.
-        print "Generating ospf configs snippet in ../CFGS foler...\n"
-        time.sleep(2)
-        os.system("ansible-playbook site.yml")
+        with open("/home/omz/ansible-play/ospf-config/roles/cisco/vars/main.yml", "r") as var:
+            yml = yaml.load(var)
+   
+        templateLoader = FileSystemLoader("/home/omz/ansible-play/ospf-config/roles/cisco/templates/")
+        templateEnv = Environment(loader = templateLoader, trim_blocks=True)
+        template = templateEnv.get_template("cisco_ospf.j2")
+        output = template.render(yml=yml)
+        
+        #print output
+
+        config_file = open("/home/omz/ansible-play/ospf-config/CFGS/{}.txt".format(hostname), "w")
+        config_file.write(output)
+        config_file.close()       
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #print "../vars/main.yml generating..."
         #time.sleep(2)
-        print "*** Config snippet ***"
-        os.system("cat /home/omz/ansible-play/ospf-config/CFGS/%s.txt" % (hostname))
-
-
-    elif hostname == 'q':
-        sys.exit(1)
-
-        
-            
-
-            
-
-        
-
-
-    
-
-
-            
-
-
-    
+        #print "../vars/main.yml generated!"
+        # Generating the configs.
+        #print "Generating ospf configs snippet in ../CFGS foler...\n"
+    #time.sleep(2)
+    os.system("ansible-playbook site.yml")
+    #time.sleep(2)
+    #print "*** Config snippet ***"
+    #os.system("cat /home/omz/ansible-play/ospf-config/CFGS/%s.txt" % (hostname))
+   
     
 if __name__ == "__main__":
     main()
